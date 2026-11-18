@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Use spare Codex capacity in an invite-only room. Learn how credits work and who can see your requests.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f0f3fc">
+  <meta name="robots" content="noindex">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Tokenpool · Shared Codex capacity</title>
+  <link rel="icon" href="./mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css?v=0.1.6">
+  <script src="./site.js?v=0.1.6" defer></script>
+</head>
+<body>
+  <header class="site-head">
+    <a class="brand" href="./" aria-label="Tokenpool home"><img src="./mark.svg" alt="" width="31" height="31">Tokenpool</a>
+    <span class="mode"><span></span><span id="mode">Invite-only rooms</span></span>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="headline">
+      <h1 id="headline">Use spare Codex capacity.</h1>
+      <p>Have a room invitation? Run this command to use shared capacity in your own Codex project.</p>
+      <button class="command" id="copy" type="button" aria-label="Copy Tokenpool buyer command" aria-describedby="command" disabled>
+        <span class="prompt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m7 8 4 4-4 4m6 0h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <code id="command">npx --yes tokenpool</code>
+        <span class="copy-icon" aria-hidden="true"><svg class="copy-glyph" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M15 6V5a1 1 0 0 0-1-1H6a2 2 0 0 0-2 2v8a1 1 0 0 0 1 1h1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><svg class="check-glyph" viewBox="0 0 24 24" fill="none"><path d="m5 12 4.5 4.5L19 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="copy-label">Copy</span></span>
+      </button>
+      <p class="hero-note" id="copy-status" role="status">Requires Node 22.13+ and Codex CLI or desktop app</p>
+      <a class="privacy-link" href="#privacy">Who can see my prompts?</a>
+    </section>
+
+    <section class="guide" aria-labelledby="room">
+      <h2 id="room">How the room works</h2>
+      <dl>
+        <dt>Using capacity</dt>
+        <dd>Ask the room operator for a single-use invitation. Enter it in the client, name your device, then choose a project. You can use pool credits without a Codex subscription when a seller has capacity. In Auto mode, an eligible personal subscription is used first.</dd>
+        <dt>Sharing capacity</dt>
+        <dd>The operator connects the seller account with a private seller profile. Sellers can offer a percentage manually or let Auto learn from at least 24 hours of usage and reserve capacity for their own work before a reset. An offer may expire unused.</dd>
+        <dt>What a credit buys</dt>
+        <dd>Credits cover model usage inside the room. After a request finishes, 99% of the charge goes to the seller pool and 1% is the service fee. A request already running can exceed the remaining balance. Live payments and cash payouts are disabled.</dd>
+      </dl>
+    </section>
+
+    <section class="guide" aria-labelledby="privacy">
+      <h2 id="privacy" tabindex="-1">Who can see my prompts?</h2>
+      <dl>
+        <dt>On your computer</dt>
+        <dd>Codex runs tools and opens project files locally. When it includes a code excerpt or tool result in a prompt, that content travels with the request.</dd>
+        <dt>Along the route</dt>
+        <dd>On your own allowance, Auto sends the model request directly to OpenAI. On pool credits, the hosted client sends it over HTTPS through Cloudflare to the room gateway, which forwards it to OpenAI using the seller’s login. The gateway operator can read prompts and responses. Choose a room you trust with the project context you send.</dd>
+        <dt>In the room</dt>
+        <dd>The seller dashboard shows account and device labels and usage totals. Prompts and code stay out of that dashboard. Buyers use separate device credentials and never receive the seller’s login. You can revoke a linked device under Account → Devices.</dd>
+      </dl>
+    </section>
+
+    <section class="market" id="market" data-state="loading" aria-labelledby="market-title">
+      <header class="market-head">
+        <div>
+          <h2 id="market-title">Sandbox order book</h2>
+          <p id="book-label">Illustrative Codex market</p>
+        </div>
+        <div class="quote">
+          <span id="quote-label">Last sample trade</span>
+          <div><strong id="quote">—</strong> <small>USD / 1M</small></div>
+        </div>
+      </header>
+      <div class="books" id="books" aria-busy="true">
+        <table class="bids">
+          <caption>Buy orders</caption>
+          <thead><tr><th scope="col">USD / 1M</th><th scope="col">Tokens</th><th scope="col">Expiry</th></tr></thead>
+          <tbody id="bids"><tr><td class="empty" colspan="3">Loading buy orders…</td></tr></tbody>
+        </table>
+        <table class="asks">
+          <caption>Sell orders</caption>
+          <thead><tr><th scope="col">USD / 1M</th><th scope="col">Tokens</th><th scope="col">Expiry</th></tr></thead>
+          <tbody id="asks"><tr><td class="empty" colspan="3">Loading sell orders…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="market-foot"><span id="market-status">Loading order book…</span><span>1% fee on filled tokens</span></div>
+    </section>
+
+    <section class="reference" aria-labelledby="reference-title">
+      <div><h2 id="reference-title">Codex API reference</h2><p>GPT-5.3-Codex · USD per 1M tokens</p></div>
+      <dl><div><dt>Input</dt><dd>$1.75</dd></div><div><dt>Cached input</dt><dd>$0.175</dd></div><div><dt>Output</dt><dd>$14.00</dd></div></dl>
+      <a href="https://developers.openai.com/api/docs/models/gpt-5.3-codex">OpenAI pricing <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+  <footer><span>Tokenpool</span><span>Independent hackathon project</span></footer>
+</body>
+</html>

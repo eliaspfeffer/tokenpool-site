@@ -1,0 +1,18 @@
+{
+  "mode": "example",
+  "lastTrade": { "price": 84 },
+  "bids": [
+    { "price": 82, "tokens": 1200000, "demoMinutes": 54 },
+    { "price": 78, "tokens": 2100000, "demoMinutes": 41 },
+    { "price": 75, "tokens": 3500000, "demoMinutes": 29 },
+    { "price": 71, "tokens": 4900000, "demoMinutes": 56 },
+    { "price": 68, "tokens": 6300000, "demoMinutes": 47 }
+  ],
+  "asks": [
+    { "price": 86, "tokens": 840000, "demoMinutes": 32 },
+    { "price": 89, "tokens": 1650000, "demoMinutes": 74 },
+    { "price": 94, "tokens": 2700000, "demoMinutes": 109 },
+    { "price": 97, "tokens": 3900000, "demoMinutes": 146 },
+    { "price": 103, "tokens": 5100000, "demoMinutes": 211 }
+  ]
+}
