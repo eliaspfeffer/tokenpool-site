@@ -4,6 +4,7 @@ const number = new Intl.NumberFormat('en', { notation: 'compact', maximumFractio
 const price = cents => `$${(cents / 100).toFixed(2)}`;
 const command = $('command').textContent;
 const defaultStatus = $('copy-status').textContent;
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let resetCopy;
 let loaded = false;
 
@@ -61,15 +62,19 @@ function drawRows(side, levels, asOf, max) {
       const bar = quantity.appendChild(document.createElement('span'));
       bar.setAttribute('aria-hidden', 'true');
       row.insertCell();
-      if (loaded) row.dataset.new = '';
     }
     const minutes = level.demoMinutes ?? Math.floor((level.expiresAt - asOf) / 60_000);
     row.cells[0].textContent = price(level.price);
     row.cells[1].firstChild.textContent = number.format(level.tokens);
-    row.cells[1].title = level.tokens.toLocaleString('en');
+    const quantity = level.tokens.toLocaleString('en');
+    const changed = row.cells[1].title !== quantity;
+    row.cells[1].title = quantity;
     row.cells[1].lastChild.style.setProperty('--depth-share', level.tokens / max);
     row.cells[2].textContent = duration(minutes);
     if (row !== cursor) body.insertBefore(row, cursor);
+    if (loaded && changed && !reducedMotion.matches) {
+      row.animate([{ backgroundColor: 'var(--depth)' }, { backgroundColor: 'transparent' }], 650);
+    }
     cursor = row.nextElementSibling;
     remaining.add(row);
   }
@@ -84,12 +89,31 @@ const models = {
 let samples;
 let revision = 0;
 let poll;
+let sampleStep = 0;
+let playing = !reducedMotion.matches;
+
+// Replay one change at a time against the original sample quantities.
+function sampleBook(book) {
+  const frame = structuredClone(book);
+  if (frame.asks.length && (sampleStep === 1 || sampleStep === 2)) frame.asks[0].tokens += 60000;
+  if (frame.bids.length && sampleStep >= 2) frame.bids[0].tokens += 40000;
+  return frame;
+}
+
+function scheduleSample() {
+  if (playing) poll = setTimeout(() => {
+    sampleStep = (sampleStep + 1) % 4;
+    updateBook();
+  }, 2400);
+}
 
 async function updateBook() {
   clearTimeout(poll);
   const current = ++revision;
   const model = $('model').value;
   const live = local && model === 'codex';
+  $('sample-play').hidden = live;
+  $('sample-play').textContent = playing ? 'Pause sample' : 'Play sample';
   $('books').setAttribute('aria-busy', 'true');
   try {
     let book;
@@ -101,10 +125,10 @@ async function updateBook() {
       if (live) book = data;
       else samples = data;
     }
-    if (!live) book = samples[model];
+    if (!live) book = sampleBook(samples[model]);
     const max = Math.max(1, ...[...book.bids, ...book.asks].map(level => level.tokens));
     drawRows('bids', book.bids, book.asOf, max);
-    drawRows('asks', book.asks, book.asOf, max);
+    drawRows('asks', [...book.asks].reverse(), book.asOf, max);
     const ask = book.asks[0]?.price;
     const bid = book.bids[0]?.price;
     const quote = book.lastTrade?.price ?? ask ?? bid;
@@ -113,14 +137,15 @@ async function updateBook() {
       : book.lastTrade ? 'Last simulated trade' : ask ? 'Best ask' : bid ? 'Best bid' : 'Waiting for orders';
     $('book-label').textContent = live ? 'Local simulated orders' : 'Illustrative orders';
     $('market').dataset.state = live ? 'live' : 'example';
-    $('market-status').textContent = live
+    const status = live
       ? `Updated ${new Date(book.asOf).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
       : `${models[$('provider').value][model]} · Sample data`;
+    if ($('market-status').textContent !== status) $('market-status').textContent = status;
     loaded = true;
   } catch {
     if (current !== revision) return;
     $('market').dataset.state = 'offline';
-    $('market-status').textContent = live ? 'Updates paused · Reconnecting' : 'Sample book unavailable';
+    const status = live ? 'Updates paused · Reconnecting' : 'Sample book unavailable';
     $('book-label').textContent = loaded ? 'Showing last known orders' : 'Order book unavailable';
     if (!loaded) {
       $('quote-label').textContent = 'Price unavailable';
@@ -138,10 +163,21 @@ async function updateBook() {
     if (current === revision) {
       $('books').setAttribute('aria-busy', 'false');
       if (live) poll = setTimeout(updateBook, 2500);
+      else if ($('market').dataset.state === 'example') scheduleSample();
     }
   }
 }
+function setPlaying(value) {
+  playing = value;
+  if ($('sample-play').hidden) return;
+  clearTimeout(poll);
+  $('sample-play').textContent = playing ? 'Pause sample' : 'Play sample';
+  if (loaded) scheduleSample();
+}
+$('sample-play').addEventListener('click', () => setPlaying(!playing));
+
 function changeBook() {
+  sampleStep = 0;
   loaded = false;
   $('quote').textContent = '—';
   $('quote-label').textContent = 'Loading price';
@@ -159,11 +195,13 @@ $('provider').addEventListener('change', () => {
 $('model').addEventListener('change', changeBook);
 updateBook();
 
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const videos = document.querySelectorAll('video');
 for (const video of videos) {
   if (!reducedMotion.matches) video.play().catch(() => {});
 }
 reducedMotion.addEventListener('change', () => {
-  if (reducedMotion.matches) for (const video of videos) video.pause();
+  if (reducedMotion.matches) {
+    setPlaying(false);
+    for (const video of videos) video.pause();
+  }
 });

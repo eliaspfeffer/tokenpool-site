@@ -10,8 +10,8 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
   <title>Tokenpool · Shared AI capacity</title>
   <link rel="icon" href="./mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=0.2.1">
-  <script src="./site.js?v=0.2.1" defer></script>
+  <link rel="stylesheet" href="./style.css?v=0.2.2">
+  <script src="./site.js?v=0.2.2" defer></script>
 </head>
 <body>
   <header class="site-head">
@@ -70,7 +70,7 @@
           <tbody id="bids"><tr><td class="empty" colspan="3">Loading buy orders…</td></tr></tbody>
         </table>
       </div>
-      <div class="market-foot"><span id="market-status" role="status">Loading orders…</span><span>1% fee on fills</span></div>
+      <div class="market-foot"><span id="market-status" role="status">Loading orders…</span><button id="sample-play" type="button" hidden>Play sample</button><span>1% fee on fills</span></div>
     </section>
     <section class="monitor" id="monitor" aria-labelledby="monitor-title">
       <h2 id="monitor-title">Set it from the menu bar.</h2>
@@ -82,6 +82,11 @@
       </figure>
     </section>
     </div>
+    <details class="privacy" id="allowance">
+      <summary>When do I use my tokens or someone else’s?</summary>
+      <p><strong>Your tokens first.</strong> Before each request, Codex Auto checks your subscription. By default, it saves the last 10% of each limit for later. It may save more as it learns your routine. While all your limits are above that reserve, the request uses your subscription.</p>
+      <p><strong>The pool when needed.</strong> If your allowance reaches that reserve, or you have no eligible subscription, Auto looks for a seller offering your model. You need room credits to use their capacity. Auto checks your allowance again for the next request.</p>
+    </details>
     <details class="privacy" id="privacy">
       <summary>Who can see my prompts?</summary>
       <ol class="route" aria-label="Route of a pooled request"><li>Your project</li><li>Room gateway</li><li>Model provider</li></ol>
