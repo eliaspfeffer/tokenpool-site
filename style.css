@@ -59,6 +59,8 @@ h1 {
 .hero-copy > p { margin-top: 1.1rem; color: var(--muted); font-size: 1.05rem; line-height: 1.45; }
 .providers { display: flex; align-items: center; flex-wrap: wrap; column-gap: 1.25rem; row-gap: .5rem; margin-top: 1.45rem; }
 .providers > span { display: inline-flex; align-items: center; gap: .35rem; font-weight: 620; font-size: 1.05rem; letter-spacing: -.024em; }
+.grok-bot { display: inline-flex; align-items: center; gap: .35rem; color: inherit; text-decoration: none; }
+.grok-bot:hover, .grok-bot:focus-visible { text-decoration: underline; text-underline-offset: .2em; }
 .providers img { align-self: center; vertical-align: middle; }
 .providers small { color: var(--muted); font-size: .65rem; font-weight: 500; letter-spacing: .015em; }
 figure { margin: 0; }

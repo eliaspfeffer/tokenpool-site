@@ -10,8 +10,8 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
   <title>Tokenpool · Shared AI capacity</title>
   <link rel="icon" href="./mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=0.2.0">
-  <script src="./site.js?v=0.2.0" defer></script>
+  <link rel="stylesheet" href="./style.css?v=0.2.1">
+  <script src="./site.js?v=0.2.1" defer></script>
 </head>
 <body>
   <header class="site-head">
@@ -25,7 +25,7 @@
         <div class="providers" aria-label="Clients">
           <span><img src="./media/codex.svg" width="25" height="25" alt="">Codex</span>
           <span><img src="./media/claude.svg" width="27" height="27" alt="">Claude</span>
-          <span class="planned">QuarkBot <small>Planned</small></span>
+          <span><a class="grok-bot" href="https://x.ai/bot"><img src="./media/grok-bot.svg" width="25" height="25" alt="">Grok Bot</a> <small>Pooling planned</small></span>
         </div>
         <p>Use pool credits for Codex, or choose a local Claude profile.</p>
       <button class="command" id="copy" type="button" aria-label="Copy Tokenpool buyer command" aria-describedby="command" disabled>
@@ -55,7 +55,7 @@
         </div>
       </header>
       <div class="filters">
-        <label>Provider<select id="provider"><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option></select></label>
+        <label>Provider<select id="provider"><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="xai">xAI</option></select></label>
         <label>Model<select id="model"><option value="codex">Codex default</option></select></label>
       </div>
       <div class="books" id="books" aria-busy="true">

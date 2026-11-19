@@ -90,5 +90,24 @@
         "demoMinutes": 88
       }
     ]
+  },
+  "grok": {
+    "lastTrade": {
+      "price": 107
+    },
+    "bids": [
+      {
+        "price": 104,
+        "tokens": 460000,
+        "demoMinutes": 36
+      }
+    ],
+    "asks": [
+      {
+        "price": 110,
+        "tokens": 580000,
+        "demoMinutes": 62
+      }
+    ]
   }
 }

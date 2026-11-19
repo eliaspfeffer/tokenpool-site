@@ -78,7 +78,8 @@ function drawRows(side, levels, asOf, max) {
 
 const models = {
   openai: { codex: 'Codex default' },
-  anthropic: { sonnet: 'Claude Sonnet', opus: 'Claude Opus' }
+  anthropic: { sonnet: 'Claude Sonnet', opus: 'Claude Opus' },
+  xai: { grok: 'Grok 4.7' }
 };
 let samples;
 let revision = 0;
@@ -93,7 +94,7 @@ async function updateBook() {
   try {
     let book;
     if (live || !samples) {
-      const response = await fetch(live ? '/api/book' : './sample.json', { cache: 'no-store', signal: AbortSignal.timeout(4000) });
+      const response = await fetch(live ? '/api/book' : './sample.json?v=0.2.1', { cache: 'no-store', signal: AbortSignal.timeout(4000) });
       if (!response.ok) throw new Error();
       const data = await response.json();
       if (current !== revision) return;
