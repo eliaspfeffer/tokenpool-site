@@ -1,18 +1,94 @@
 {
-  "mode": "example",
-  "lastTrade": { "price": 84 },
-  "bids": [
-    { "price": 82, "tokens": 1200000, "demoMinutes": 54 },
-    { "price": 78, "tokens": 2100000, "demoMinutes": 41 },
-    { "price": 75, "tokens": 3500000, "demoMinutes": 29 },
-    { "price": 71, "tokens": 4900000, "demoMinutes": 56 },
-    { "price": 68, "tokens": 6300000, "demoMinutes": 47 }
-  ],
-  "asks": [
-    { "price": 86, "tokens": 840000, "demoMinutes": 32 },
-    { "price": 89, "tokens": 1650000, "demoMinutes": 74 },
-    { "price": 94, "tokens": 2700000, "demoMinutes": 109 },
-    { "price": 97, "tokens": 3900000, "demoMinutes": 146 },
-    { "price": 103, "tokens": 5100000, "demoMinutes": 211 }
-  ]
+  "codex": {
+    "lastTrade": {
+      "price": 84
+    },
+    "bids": [
+      {
+        "price": 82,
+        "tokens": 1200000,
+        "demoMinutes": 54
+      },
+      {
+        "price": 78,
+        "tokens": 2100000,
+        "demoMinutes": 41
+      },
+      {
+        "price": 75,
+        "tokens": 3500000,
+        "demoMinutes": 29
+      }
+    ],
+    "asks": [
+      {
+        "price": 86,
+        "tokens": 840000,
+        "demoMinutes": 32
+      },
+      {
+        "price": 89,
+        "tokens": 1650000,
+        "demoMinutes": 74
+      },
+      {
+        "price": 94,
+        "tokens": 2700000,
+        "demoMinutes": 109
+      }
+    ]
+  },
+  "sonnet": {
+    "lastTrade": {
+      "price": 126
+    },
+    "bids": [
+      {
+        "price": 124,
+        "tokens": 850000,
+        "demoMinutes": 46
+      },
+      {
+        "price": 121,
+        "tokens": 650000,
+        "demoMinutes": 38
+      }
+    ],
+    "asks": [
+      {
+        "price": 130,
+        "tokens": 460000,
+        "demoMinutes": 33
+      },
+      {
+        "price": 134,
+        "tokens": 920000,
+        "demoMinutes": 51
+      }
+    ]
+  },
+  "opus": {
+    "lastTrade": {
+      "price": 240
+    },
+    "bids": [
+      {
+        "price": 235,
+        "tokens": 160000,
+        "demoMinutes": 70
+      }
+    ],
+    "asks": [
+      {
+        "price": 247,
+        "tokens": 225000,
+        "demoMinutes": 42
+      },
+      {
+        "price": 251,
+        "tokens": 450000,
+        "demoMinutes": 88
+      }
+    ]
+  }
 }

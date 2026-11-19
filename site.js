@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-const local = location.protocol === 'http:' && location.hostname === '127.0.0.1';
+const local = document.documentElement.hasAttribute('data-local-book');
 const number = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 });
 const price = cents => `$${(cents / 100).toFixed(2)}`;
 const command = $('command').textContent;
@@ -7,10 +7,6 @@ const defaultStatus = $('copy-status').textContent;
 let resetCopy;
 let loaded = false;
 
-document.documentElement.dataset.market = local ? 'local' : 'example';
-$('book-label').textContent = local ? 'Live Codex simulation' : 'Illustrative Codex market';
-$('copy-status').textContent = defaultStatus;
-$('command').textContent = command;
 $('copy').disabled = false;
 $('copy').addEventListener('click', async () => {
   clearTimeout(resetCopy);
@@ -80,11 +76,31 @@ function drawRows(side, levels, asOf, max) {
   for (const row of [...body.rows]) if (!remaining.has(row)) row.remove();
 }
 
+const models = {
+  openai: { codex: 'Codex default' },
+  anthropic: { sonnet: 'Claude Sonnet', opus: 'Claude Opus' }
+};
+let samples;
+let revision = 0;
+let poll;
+
 async function updateBook() {
+  clearTimeout(poll);
+  const current = ++revision;
+  const model = $('model').value;
+  const live = local && model === 'codex';
+  $('books').setAttribute('aria-busy', 'true');
   try {
-    const response = await fetch(local ? '/api/book' : './sample.json', { cache: 'no-store', signal: AbortSignal.timeout(4000) });
-    if (!response.ok) throw new Error();
-    const book = await response.json();
+    let book;
+    if (live || !samples) {
+      const response = await fetch(live ? '/api/book' : './sample.json', { cache: 'no-store', signal: AbortSignal.timeout(4000) });
+      if (!response.ok) throw new Error();
+      const data = await response.json();
+      if (current !== revision) return;
+      if (live) book = data;
+      else samples = data;
+    }
+    if (!live) book = samples[model];
     const max = Math.max(1, ...[...book.bids, ...book.asks].map(level => level.tokens));
     drawRows('bids', book.bids, book.asOf, max);
     drawRows('asks', book.asks, book.asOf, max);
@@ -92,17 +108,18 @@ async function updateBook() {
     const bid = book.bids[0]?.price;
     const quote = book.lastTrade?.price ?? ask ?? bid;
     $('quote').textContent = quote === undefined ? '—' : price(quote);
-    $('quote-label').textContent = !local ? 'Last sample trade'
-      : book.lastTrade ? 'Last sandbox trade' : ask ? 'Best ask' : bid ? 'Best bid' : 'Waiting for orders';
-    $('book-label').textContent = local ? 'Live Codex simulation' : 'Illustrative Codex market';
-    $('market').dataset.state = local ? 'live' : 'example';
-    $('market-status').textContent = local
+    $('quote-label').textContent = !live ? 'Last sample trade'
+      : book.lastTrade ? 'Last simulated trade' : ask ? 'Best ask' : bid ? 'Best bid' : 'Waiting for orders';
+    $('book-label').textContent = live ? 'Local simulated orders' : 'Illustrative orders';
+    $('market').dataset.state = live ? 'live' : 'example';
+    $('market-status').textContent = live
       ? `Updated ${new Date(book.asOf).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
-      : 'Sample market data';
+      : `${models[$('provider').value][model]} · Sample data`;
     loaded = true;
   } catch {
+    if (current !== revision) return;
     $('market').dataset.state = 'offline';
-    $('market-status').textContent = local ? 'Updates paused · Reconnecting' : 'Sample book unavailable';
+    $('market-status').textContent = live ? 'Updates paused · Reconnecting' : 'Sample book unavailable';
     $('book-label').textContent = loaded ? 'Showing last known orders' : 'Order book unavailable';
     if (!loaded) {
       $('quote-label').textContent = 'Price unavailable';
@@ -117,8 +134,35 @@ async function updateBook() {
       }
     }
   } finally {
-    $('books').setAttribute('aria-busy', 'false');
-    if (local) setTimeout(updateBook, 2500);
+    if (current === revision) {
+      $('books').setAttribute('aria-busy', 'false');
+      if (live) poll = setTimeout(updateBook, 2500);
+    }
   }
 }
+function changeBook() {
+  loaded = false;
+  $('quote').textContent = '—';
+  $('quote-label').textContent = 'Loading price';
+  $('book-label').textContent = 'Loading orders…';
+  $('market-status').textContent = 'Loading orders…';
+  for (const side of ['asks', 'bids']) $(side).replaceChildren();
+  updateBook();
+}
+
+$('provider').addEventListener('change', () => {
+  const choices = Object.entries(models[$('provider').value]);
+  $('model').replaceChildren(...choices.map(([value, label]) => new Option(label, value)));
+  changeBook();
+});
+$('model').addEventListener('change', changeBook);
 updateBook();
+
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const videos = document.querySelectorAll('video');
+for (const video of videos) {
+  if (!reducedMotion.matches) video.play().catch(() => {});
+}
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches) for (const video of videos) video.pause();
+});
